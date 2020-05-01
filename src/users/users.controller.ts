@@ -1,8 +1,8 @@
-import { Controller, Get, UseGuards, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, UseGuards, Post, Body, Param, Delete, Put, ClassSerializerInterceptor, UseInterceptors } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/CreateUserDto';
+import { CreateUserDto } from './dto/create-userDto';
 import { UpdateUserDto } from './dto/update-userDto';
 
 @Controller('users')
@@ -18,6 +18,7 @@ export class UsersController {
 
     @Post()
     @UseGuards(JwtAuthGuard)
+    @UseInterceptors(ClassSerializerInterceptor)
     async create(@Body() createUserDto: CreateUserDto) {
         return this.usersService.create(createUserDto);
     }
@@ -30,6 +31,7 @@ export class UsersController {
 
     @Put()
     @UseGuards(JwtAuthGuard)
+    @UseInterceptors(ClassSerializerInterceptor)
     async update(@Body() updateUserDto: UpdateUserDto){
         return this.usersService.update(updateUserDto);
     }
