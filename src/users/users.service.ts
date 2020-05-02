@@ -15,14 +15,14 @@ export class UsersService {
   ) { }
 
   create(createUserDto: CreateUserDto): Promise<User> {
-    return this.usersRepository.save(createUserDto);
+    return this.usersRepository.save(createUserDto).then(e => new User(e));
   }
 
-  findAll(): Promise<User[]> {
+  async findAll(): Promise<User[]> {
     return this.usersRepository.find();
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOne(id: number): Promise<User> {
     const usuario = this.usersRepository.findOne(id).then(e => new User(e));
     if (!(await usuario).id) {
       throw new CostumeNotFoundException("Usuário não encontrado.")
@@ -30,8 +30,11 @@ export class UsersService {
     return usuario
   }
 
-  async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
+  async remove(id: number) {
+    const result = await this.usersRepository.delete(id);
+    if(result.affected==0)
+      throw new CostumeNotFoundException("Usuário não encontrado.")
+    return {menssage: "User removido."};
   }
 
   async findOneUserName(username: string): Promise<User> {
@@ -39,7 +42,7 @@ export class UsersService {
     if (!(await usuario).id) {
       throw new CostumeNotFoundException("Usuário não encontrado.")
     }
-    return usuario
+    return usuario;
   }
 
   async update(usuario: UpdateUserDto): Promise<User> {
